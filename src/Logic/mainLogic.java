@@ -15,7 +15,7 @@ public class mainLogic {
     public static Map<String, Integer> nSetOfStrings = new HashMap<>();
     public static Map<Integer, String> nSetOfInts = new HashMap<>();
     public static List<LogItem> logItems = new ArrayList<>();
-    public static int userId = -1;
+    public static int userId = 2;
 
     public static void main(String[] args) {
         double mins = 0.1;
@@ -52,24 +52,17 @@ public class mainLogic {
     }
 
     private static void loadInAlgorithm(Algo_estDec algo) {
-        logItems.sort((a, b) -> {
-            if (a.getLogged_on().compareTo(b.getLogged_on()) != 0) {
-                return a.getLogged_on().compareTo(b.getLogged_on());
-            } else {
-                return a.getLogged_at().compareTo(b.getLogged_at());
-            }
-        });
+        logItems.sort(Comparator.comparing(LogItem::getLogged_on));
         for (LogItem l : logItems) {
             if (getUserIdWhoDid(l) == userId) {
                 algo.processTransaction(new int[]{
-                        nSetOfStrings.get(l.getLogged_on()),        //date
-                        nSetOfStrings.get(l.getLogged_at()),        //time
+                        nSetOfStrings.get(l.getLogged_on()),        //date and time
                         nSetOfStrings.get(l.getEvent_context()),    //event context
-                        nSetOfStrings.get(l.getComponent()),        //component
+                        //nSetOfStrings.get(l.getComponent()),        //component
                         nSetOfStrings.get(l.getEvent_name()),       //event name
-                        nSetOfStrings.get(l.getDescription()),      //description
-                        nSetOfStrings.get(l.getOrigin()),           //origin
-                        nSetOfStrings.get(l.getIp())                //ip address
+                        //nSetOfStrings.get(l.getDescription()),      //description
+                        //nSetOfStrings.get(l.getOrigin()),           //origin
+                        //nSetOfStrings.get(l.getIp())                //ip address
                 });
                 try {
                     algo.performMining_saveResultToMemory();

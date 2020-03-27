@@ -4,8 +4,10 @@ import LogItems.LogItem;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.rmi.UnexpectedException;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import static Logic.mainLogic.*;
 
@@ -20,29 +22,40 @@ public class LogReader {
         try (FileInputStream in = new FileInputStream(log)) {
             Scanner reader = new Scanner(in);
             for (; reader.hasNext(); ) {
-                String[] separatedLine = reader.nextLine().split(",");
-                if (separatedLine.length == 8) {
-                    logItems.add(new LogItem(separatedLine[0], separatedLine[1], separatedLine[2], separatedLine[3], separatedLine[4], separatedLine[5], separatedLine[6], separatedLine[7]));
-                    Arrays.stream(separatedLine).forEach(x -> {
-                        if (!nSetOfStrings.containsKey(x)) {
-                            nSetOfStrings.put(x, nSetOfStrings.size());
-                            nSetOfInts.put(nSetOfInts.size(), x);
-                        }
-                    });
+                String[] separatedLine = Arrays.stream(reader.nextLine().split(",")).peek(x -> x = x.trim()).collect(Collectors.joining(",")).split(",");//trimming
+                try {
+                    if (!Character.isDigit(separatedLine[0].charAt(0))) {
+                        throw new UnexpectedLogException(String.join(" , ", separatedLine));
+                    }
+                    if (separatedLine.length == 8) {//log with ip
+                        logItems.add(new LogItem(separatedLine[0] + " " + separatedLine[1], separatedLine[2], separatedLine[3], separatedLine[4], separatedLine[5], separatedLine[6], separatedLine[7]));
+                        putInMaps(separatedLine);
 
-                } else {
-                    logItems.add(new LogItem(separatedLine[0], separatedLine[1], separatedLine[2], separatedLine[3], separatedLine[4], separatedLine[5], separatedLine[6], ""));
-                    Arrays.stream(separatedLine).forEach(x -> {
-                        if (!nSetOfStrings.containsKey(x)) {
-                            nSetOfStrings.put(x, nSetOfStrings.size());
-                            nSetOfInts.put(nSetOfInts.size(), x);
-                        }
-                    });
-
+                    } else if (separatedLine.length == 7) {//log without ip e.g from cli
+                        logItems.add(new LogItem(separatedLine[0] + " " + separatedLine[1], separatedLine[2], separatedLine[3], separatedLine[4], separatedLine[5], separatedLine[6], ""));
+                        putInMaps(separatedLine);
+                    } else {
+                        throw new UnexpectedLogException(String.join(" , ", separatedLine));
+                    }
+                }catch (UnexpectedLogException e){
+                    System.err.println(e.getMessage());
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void putInMaps(String[] separatedLine) {
+        if (!nSetOfStrings.containsKey(separatedLine[0] + " " + separatedLine[1])) {
+            nSetOfStrings.put(separatedLine[0] + " " + separatedLine[1], nSetOfStrings.size());
+            nSetOfInts.put(nSetOfInts.size(), separatedLine[0] + " " + separatedLine[1]);
+        }
+        Arrays.stream(separatedLine).skip(2).forEach(x -> {
+            if (!nSetOfStrings.containsKey(x)) {
+                nSetOfStrings.put(x.trim(), nSetOfStrings.size());
+                nSetOfInts.put(nSetOfInts.size(), x);
+            }
+        });
     }
 }

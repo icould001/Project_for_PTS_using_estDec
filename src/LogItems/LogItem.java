@@ -5,7 +5,6 @@ package LogItems;
  */
 public class LogItem {
     String logged_on;
-    String logged_at;
     String event_context;
     String component;
     String event_name;
@@ -13,9 +12,8 @@ public class LogItem {
     String origin;
     String ip;
 
-    public LogItem(String logged_on, String logged_at, String event_context, String component, String event_name, String description, String origin, String ip) {
+    public LogItem(String logged_on, String event_context, String component, String event_name, String description, String origin, String ip) {
         this.logged_on = logged_on;
-        this.logged_at = logged_at;
         this.event_context = event_context;
         this.component = component;
         this.event_name = event_name;
@@ -26,10 +24,6 @@ public class LogItem {
 
     public String getLogged_on() {
         return logged_on;
-    }
-
-    public String getLogged_at() {
-        return logged_at;
     }
 
     public String getEvent_context() {
