@@ -12,11 +12,12 @@ import static logReader.LogReader.loadData;
  * Created by Aykut Ismailov on 22.3.2020 г.
  */
 public class mainLogic {
-    public static Map<String,Integer> nSetOfStrings=new HashMap<>();
-    public static Map<Integer,String> nSetOfInts=new HashMap<>();
-    public static List<LogItem> logItems=new ArrayList<>();
+    public static Map<String, Integer> nSetOfStrings = new HashMap<>();
+    public static Map<Integer, String> nSetOfInts = new HashMap<>();
+    public static List<LogItem> logItems = new ArrayList<>();
+    public static int userId = -1;
 
-    public static void main(String []args){
+    public static void main(String[] args) {
         double mins = 0.1;
         double minsig = 0.4 * mins;
 
@@ -25,7 +26,8 @@ public class mainLogic {
         // To set the decay rate manually:
         algo.setDecayRate(2, 10000);
 
-        loadData(algo);
+        loadData();
+        loadInAlgorithm(algo);
 
         // To perform mining and save the result to memory:
         Hashtable<int[], Double> result = null;
@@ -47,5 +49,43 @@ public class mainLogic {
             }
             System.out.println("#SUP: " + entry.getValue());
         }
+    }
+
+    private static void loadInAlgorithm(Algo_estDec algo) {
+        logItems.sort((a, b) -> {
+            if (a.getLogged_on().compareTo(b.getLogged_on()) != 0) {
+                return a.getLogged_on().compareTo(b.getLogged_on());
+            } else {
+                return a.getLogged_at().compareTo(b.getLogged_at());
+            }
+        });
+        for (LogItem l : logItems) {
+            if (getUserIdWhoDid(l) == userId) {
+                algo.processTransaction(new int[]{
+                        nSetOfStrings.get(l.getLogged_on()),        //date
+                        nSetOfStrings.get(l.getLogged_at()),        //time
+                        nSetOfStrings.get(l.getEvent_context()),    //event context
+                        nSetOfStrings.get(l.getComponent()),        //component
+                        nSetOfStrings.get(l.getEvent_name()),       //event name
+                        nSetOfStrings.get(l.getDescription()),      //description
+                        nSetOfStrings.get(l.getOrigin()),           //origin
+                        nSetOfStrings.get(l.getIp())                //ip address
+                });
+                try {
+                    algo.performMining_saveResultToMemory();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private static int getUserIdWhoDid(LogItem l) {
+        if (l.getDescription().matches(".*The user with id '[0-9]+'.*")) {
+            return Integer.parseInt(l.getDescription().split("'")[1]);
+        } else {
+            System.out.println(l.getDescription());
+        }
+        return -2;
     }
 }
