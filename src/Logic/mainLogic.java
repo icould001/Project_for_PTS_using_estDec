@@ -1,18 +1,20 @@
 package Logic;
 
-import LogItems.LogItem;
+/*
+import NewVersion.DataManagement.Items.LogItem;
+import NewVersion.Util.Result;
 import ca.pfv.spmf.algorithms.frequentpatterns.estDec.Algo_estDec;
 
 import java.io.IOException;
 import java.util.*;
 
-import static logReader.LogReader.loadData;
+*/
 
 /**
  * Created by Aykut Ismailov on 22.3.2020 г.
  */
 public class mainLogic {
-    public static Map<String, Integer> nSetOfStrings = new HashMap<>();
+    /*public static Map<String, Integer> nSetOfStrings = new HashMap<>();
     public static Map<Integer, String> nSetOfInts = new HashMap<>();
     public static List<LogItem> logItems = new ArrayList<>();
     public static int userId = 2;
@@ -51,7 +53,7 @@ public class mainLogic {
         }
     }
 
-    private static void loadInAlgorithm(Algo_estDec algo) {
+    private static Result loadInAlgorithm(Algo_estDec algo) {
         logItems.sort(Comparator.comparing(LogItem::getLogged_on));
         for (LogItem l : logItems) {
             if (getUserIdWhoDid(l) == userId) {
@@ -68,17 +70,12 @@ public class mainLogic {
                     algo.performMining_saveResultToMemory();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return Result.NOK;
                 }
             }
         }
-    }
+        return Result.OK;
+    }*/
 
-    private static int getUserIdWhoDid(LogItem l) {
-        if (l.getDescription().matches(".*The user with id '[0-9]+'.*")) {
-            return Integer.parseInt(l.getDescription().split("'")[1]);
-        } else {
-            System.out.println(l.getDescription());
-        }
-        return -2;
-    }
+
 }

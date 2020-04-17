@@ -221,4 +221,21 @@ public class Algo_estDec {
         System.out.println(" Mining time ~ " + miningTime + " ms");
         System.out.println("===================================================");
     }
+
+    /**
+     * Returns statistics about the algorithm execution to a String.
+     */
+    public String getStats() {
+        StringBuilder s = new StringBuilder();
+        s.append("=============  ESTDEC - STATS =============" + System.lineSeparator());
+        s.append(" Number of nodes : " + tree.nodeCount(tree.root) + System.lineSeparator());
+        s.append(" Frequent itemsets count : " + tree.patternCount + System.lineSeparator());
+        s.append(" Maximum memory usage : " + maxMemory + " mb" + System.lineSeparator());
+        s.append(" Number of transactions: " + tree.getK() + System.lineSeparator());
+        s.append(" Total insertion time ~ " + sumTransactionInsertionTime + " ms" + System.lineSeparator());
+        s.append(" Insertion time per transaction ~ " + sumTransactionInsertionTime / tree.getK() + " ms" + System.lineSeparator());
+        s.append(" Mining time ~ " + miningTime + " ms" + System.lineSeparator());
+        s.append("===================================================" + System.lineSeparator());
+        return s.toString();
+    }
 }

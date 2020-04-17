@@ -1,10 +1,10 @@
 package logReader;
-
-import LogItems.LogItem;
+/*
+import NewVersion.DataManagement.Items.LogItem;
+import NewVersion.Util.UnexpectedLogException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.rmi.UnexpectedException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -14,6 +14,7 @@ import static Logic.mainLogic.*;
 /**
  * Created by Aykut Ismailov on 22.3.2020 г.
  */
+/*
 public class LogReader {
     static String log = "src/logReader/logs_BCS37_20181103.csv";
 
@@ -59,3 +60,4 @@ public class LogReader {
         });
     }
 }
+*/

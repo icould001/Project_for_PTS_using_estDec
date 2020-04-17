@@ -1,4 +1,4 @@
-package logReader;
+package NewVersion.Util;
 
 /**
  * Created by Aykut Ismailov on 27.3.2020 г.
