@@ -140,7 +140,7 @@ public class FilterDataManager {
                     //DataHolder.nSetOfStrings.get(l.getOrigin()),           //origin
                     //DataHolder.nSetOfStrings.get(l.getIp())                //ip address
             });
-            try {
+            try { // това забавя супер много
                 algo.performMining_saveResultToMemory();
             } catch (IOException e) {
                 e.printStackTrace();
