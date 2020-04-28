@@ -17,6 +17,7 @@ import java.util.*;
  */
 public class FilterDataManager {
 
+
     public static Result filter(UIManager ui) {
         Result r = Result.OK;
 
@@ -30,31 +31,20 @@ public class FilterDataManager {
 
         List<LogItem> filteredLogs = new ArrayList<>();
 
-        if (r == Result.OK) {
-            r = filterByUser(ui, filteredLogs);
+        r = proper_filter_by_user(ui, r, filteredLogs);
+
+        r = proper_filter_by_time(ui, r, filteredLogs);
+
+        r = proper_filter_by_event_context(ui, r, filteredLogs);
+
+        r = proper_filter_by_component(ui, r, filteredLogs);
+
+        r = loadInAlgorithm(algo, filteredLogs);
+
+        if (r != Result.OK) {
+            ui.tellToUser("Error loading data to algorithm.");
         }
 
-        if (r == Result.OK) {
-            r = filterByTime(ui, filteredLogs);
-        } else {
-            ui.tellToUser("Error filtering by user");
-            filteredLogs.clear();
-            filteredLogs.addAll(DataHolder.logItems);
-            r = filterByTime(ui, filteredLogs);
-        }
-
-
-        if (r == Result.OK) {
-            r = loadInAlgorithm(algo, filteredLogs);
-        } else {
-            ui.tellToUser("Error filtering by time");
-            filteredLogs.clear();
-            r = filterByUser(ui, filteredLogs);
-            if (r != Result.OK) {
-                filteredLogs.addAll(DataHolder.logItems);
-            }
-            r = loadInAlgorithm(algo, filteredLogs);
-        }
         if (r == Result.OK) {
             // To perform mining and save the result to memory:
             Hashtable<int[], Double> result = null;
@@ -71,15 +61,69 @@ public class FilterDataManager {
 
             // Print the results to the console
             results.add("Itemsets found: ");
+            assert result != null;
             for (Map.Entry<int[], Double> entry : result.entrySet()) {
                 StringBuilder s = new StringBuilder();
                 for (int item : entry.getKey()) {
-                    s.append(DataHolder.nSetOfInts.get(item) + "|  |");
+                    s.append(DataHolder.nSetOfInts.get(item)).append("|  |");
                 }
-                s.append("#SUP: " + entry.getValue());
+                s.append("#SUP: ").append(entry.getValue());
                 results.add(s.toString());
             }
             r = ui.loadDataForUser(results);
+        }
+        return r;
+    }
+
+    private static Result proper_filter_by_component(UIManager ui, Result r, List<LogItem> filteredLogs) {
+        r = filterByComponent(ui, filteredLogs);
+
+        if (r != Result.OK) {
+            ui.tellToUser("Error filtering by component");
+            filteredLogs.clear();
+            r = proper_filter_by_user(ui, Result.OK, filteredLogs);
+            r = proper_filter_by_time(ui, r, filteredLogs);
+            r = proper_filter_by_event_context(ui, r, filteredLogs);
+        }
+
+        return r;
+    }
+
+    private static Result proper_filter_by_event_context(UIManager ui, Result r, List<LogItem> filteredLogs) {
+
+        r = filterByEventContext(ui, filteredLogs);
+
+        if (r != Result.OK) {
+            ui.tellToUser("Error filtering by event context.");
+            filteredLogs.clear();
+            r = proper_filter_by_user(ui, Result.OK, filteredLogs);
+            r = proper_filter_by_time(ui, r, filteredLogs);
+        }
+        return r;
+    }
+
+    private static Result proper_filter_by_time(UIManager ui, Result r, List<LogItem> filteredLogs) {
+
+        r = filterByTime(ui, filteredLogs);
+
+        if (r != Result.OK) {
+            ui.tellToUser("Error filtering by time.");
+            filteredLogs.clear();
+            r = proper_filter_by_user(ui, Result.OK, filteredLogs);
+        }
+
+        return r;
+    }
+
+    private static Result proper_filter_by_user(UIManager ui, Result r, List<LogItem> filteredLogs) {
+        if (r == Result.OK) {
+            r = filterByUser(ui, filteredLogs);
+        }
+        if (r != Result.OK) {
+            System.out.println("Error filtering by user.");
+            filteredLogs.clear();
+            filteredLogs.addAll(DataHolder.logItems);
+            r = Result.OK;
         }
         return r;
     }
@@ -127,25 +171,28 @@ public class FilterDataManager {
         return r;
     }
 
+    private static Result filterByEventContext(UIManager ui, List<LogItem> logs) {
+        Result r = Result.OK;
+        if (!ui.getEventContext().equals("")) {
+            logs.removeIf(log -> !ui.getEventContext().equals(log.getEvent_context()));
+        }
+        return r;
+    }
+
+    private static Result filterByComponent(UIManager ui, List<LogItem> logs) {
+        Result r = Result.OK;
+        if (!"".equals(ui.getComponent())) {
+            logs.removeIf(log -> !ui.getComponent().equals(log.getComponent()));
+        }
+        return r;
+    }
+
     private static Result filterByTime(UIManager ui, List<LogItem> logs) {
         Result r = Result.OK;
 
         for (LogItem log : logs) {
             try {
-                int year = Integer.parseInt(log.getLogged_on().split(" ")[0].split("/")[2]);
-                int month = Integer.parseInt(log.getLogged_on().split(" ")[0].split("/")[1]);
-                int day = Integer.parseInt(log.getLogged_on().split(" ")[0].split("/")[0]);
-                int hour = Integer.parseInt(log.getLogged_on().split(" ")[1].split(":")[0]);
-                int minute = Integer.parseInt(log.getLogged_on().split(" ")[1].split(":")[1]);
-
-                if (ui.getStartEnd().start.compareTo(
-                        LocalDateTime.of(
-                            year, month, day, hour, minute)) > 0
-                        ||
-                    ui.getStartEnd().end.compareTo(
-                        LocalDateTime.of(
-                            year, month, day, hour, minute)) < 0) {
-
+                if (is_log_in_time_period(ui, log)) {
                     logs.remove(log);
                 }
             } catch (DateTimeParseException e) {
@@ -157,5 +204,20 @@ public class FilterDataManager {
         return r;
     }
 
+    private static boolean is_log_in_time_period(UIManager ui, LogItem log) throws DateTimeParseException {
+        int year = Integer.parseInt(log.getLogged_on().split(" ")[0].split("/")[2]);
+        int month = Integer.parseInt(log.getLogged_on().split(" ")[0].split("/")[1]);
+        int day = Integer.parseInt(log.getLogged_on().split(" ")[0].split("/")[0]);
+        int hour = Integer.parseInt(log.getLogged_on().split(" ")[1].split(":")[0]);
+        int minute = Integer.parseInt(log.getLogged_on().split(" ")[1].split(":")[1]);
+
+        return ui.getStartEnd().start.compareTo(
+                LocalDateTime.of(
+                        year, month, day, hour, minute)) > 0
+                ||
+                ui.getStartEnd().end.compareTo(
+                        LocalDateTime.of(
+                                year, month, day, hour, minute)) < 0;
+    }
 
 }

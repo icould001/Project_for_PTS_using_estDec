@@ -35,6 +35,18 @@ public class UserInputValidator {
         return r;
     }
 
+    public static Result validateEventContext(UIManager ui) {
+        Result r = Result.OK;
+        //TODO: do validation
+        return r;
+    }
+
+    public static Result validateComponent(UIManager ui) {
+        Result r = Result.OK;
+        //TODO: do validation
+        return r;
+    }
+
     public static Result validateMinSig(UIManager ui) {
         Result r = Result.OK;
         if (ui.getMinSig() < 0 || ui.getMinSig() > 1) {

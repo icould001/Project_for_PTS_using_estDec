@@ -27,32 +27,7 @@ public class LoadDataManager {
                         throw new UnexpectedLogException(
                                 String.join(" , ", separatedLine));
                     }
-                    if (separatedLine.length == 8) {//log with ip
-                        DataHolder.manageLog(new LogItem(
-                                separatedLine[0].trim() + " " + separatedLine[1].trim(),
-                                separatedLine[2].trim(),
-                                separatedLine[3].trim(),
-                                separatedLine[4].trim(),
-                                separatedLine[5].trim(),
-                                separatedLine[6].trim(),
-                                separatedLine[7].trim()));
-                        putInMaps(separatedLine);
-
-                    } else if (separatedLine.length == 7) {//log without ip e.g from cli
-                        DataHolder.manageLog(new LogItem(
-                                separatedLine[0].trim() + " " + separatedLine[1].trim(),
-                                separatedLine[2].trim(),
-                                separatedLine[3].trim(),
-                                separatedLine[4].trim(),
-                                separatedLine[5].trim(),
-                                separatedLine[6].trim(),
-                                ""));
-                        putInMaps(separatedLine);
-
-                    } else {
-                        throw new UnexpectedLogException(
-                                String.join(" , ", separatedLine));
-                    }
+                    process_log(separatedLine);
                 } catch (UnexpectedLogException e) {
                     System.err.println(e.getMessage());
                 }
@@ -63,6 +38,36 @@ public class LoadDataManager {
         }
         return r;
     }
+
+    private static void process_log(String[] separatedLine) throws UnexpectedLogException {
+        if (separatedLine.length == 8) {//log with ip
+            DataHolder.manageLog(new LogItem(
+                    separatedLine[0].trim() + " " + separatedLine[1].trim(),
+                    separatedLine[2].trim(),
+                    separatedLine[3].trim(),
+                    separatedLine[4].trim(),
+                    separatedLine[5].trim(),
+                    separatedLine[6].trim(),
+                    separatedLine[7].trim()));
+            putInMaps(separatedLine);
+
+        } else if (separatedLine.length == 7) {//log without ip e.g from cli
+            DataHolder.manageLog(new LogItem(
+                    separatedLine[0].trim() + " " + separatedLine[1].trim(),
+                    separatedLine[2].trim(),
+                    separatedLine[3].trim(),
+                    separatedLine[4].trim(),
+                    separatedLine[5].trim(),
+                    separatedLine[6].trim(),
+                    ""));
+            putInMaps(separatedLine);
+
+        } else {
+            throw new UnexpectedLogException(
+                    String.join(" , ", separatedLine));
+        }
+    }
+
     private static void putInMaps(String[] separatedLine) {
         if (!DataHolder.nSetOfStrings.containsKey(separatedLine[0].trim() + " " + separatedLine[1].trim())) {
             DataHolder.nSetOfStrings.put(

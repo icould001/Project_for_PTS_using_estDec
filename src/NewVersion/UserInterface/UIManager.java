@@ -17,6 +17,10 @@ public interface UIManager {
 
     Double getMinSig();
 
+    String getEventContext();
+
+    String getComponent();
+
     void tellToUser(String message);
 
     void tellToUser(String message,Object way);
