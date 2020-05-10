@@ -1,10 +1,5 @@
 package NewVersion.UserInterface;
 
-import NewVersion.InputValidation.UserInputValidator;
-import NewVersion.Util.Result;
-import NewVersion.Util.TimePair;
-
-import javax.xml.bind.ValidationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,12 +7,19 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JTextField;
+import javax.xml.bind.ValidationException;
+
+import NewVersion.InputValidation.UserInputValidator;
+import NewVersion.Util.Result;
+import NewVersion.Util.TimePair;
+import ProjectUI.FilterWindow;
+
 /**
  * Created by Aykut Ismailov on 17.4.2020 г.
  */
 //TODO:global - add logging
 public class ComProm implements UIManager {
-
 
     private int searched_user;
     private TimePair start_end_time;
@@ -39,59 +41,43 @@ public class ComProm implements UIManager {
     }
 
     private void initialize_me() {
-        System.out.println("Good day your majesty,");
-        for (boolean l = true; l; ) {
-            System.out.println(
-                    "Enter 1 to set filter for users;\n" +
-                            "Enter 2 to set filter for time period;\n" +
-                            "Enter 3 to set path to the file with data;\n" +
-                            "Enter 4 to set min_sig value;\n" +
-                            "Enter 5 to set filter for Event context;\n" +
-                            "Enter 6 to set filter for Component;\n" +
-                            "Enter something else to finish with changes but you have to know that I am kind of dumb right now and you can't return here unless you restart me\n");
-            String s = Init.in.nextLine();
-            try {
-                int i = Integer.parseInt(s);
-                switch (i) {
-                    case 1:
-                        input_for_user_filter();
-                        break;
-                    case 2:
-                        input_for_time_filter();
-                        break;
-                    case 3:
-                        input_for_file_path();
-                        break;
-                    case 4:
-                        input_for_min_sig_filter();
-                        break;
-                    case 5:
-                        input_for_event_context();
-                        break;
-                    case 6:
-                        input_for_component();
-                        break;
-                    default:
-                        System.out.println("Guess you are ready so we will go to the validation.");
-                        l = false;
-                        break;
-                }
-            } catch (NumberFormatException e) {
+        int i = FilterWindow.getChosenOption();
+        try {
+            switch (i) {
+            case 1:
+                input_for_user_filter();
+                break;
+            case 2:
+                input_for_time_filter();
+                break;
+            case 3:
+                input_for_file_path();
+                break;
+            case 4:
+                input_for_min_sig_filter();
+                break;
+            case 5:
+                input_for_event_context();
+                break;
+            case 6:
+                input_for_component();
+                break;
+            default:
                 System.out.println("Guess you are ready so we will go to the validation.");
-                l = false;
+                break;
             }
+        } catch (NumberFormatException e) {
+            System.out.println("Guess you are ready so we will go to the validation.");
         }
+
     }
 
     private void input_for_component() {
-        String s;
-        System.out.println("Entered 6\n" +
-                "Let's set component value\n" +
-                "Enter component:");
-        s = Init.in.nextLine();
+        JTextField comp = FilterWindow.getComponent();
+        String s = comp.getText();
         try {
             component = s;
-            //TODO: exit more gracefully
+            // TODO: exit more gracefully
             if (UserInputValidator.validateComponent(this) != Result.OK) {
                 throw new ValidationException("");
             }
@@ -103,14 +89,11 @@ public class ComProm implements UIManager {
     }
 
     private void input_for_event_context() {
-        String s;
-        System.out.println("Entered 5\n" +
-                "Let's set event context value\n" +
-                "Enter event context:");
-        s = Init.in.nextLine();
+        JTextField context = FilterWindow.getEventContent();
+        String s = context.getText();
         try {
             event_context = s;
-            //TODO: exit more gracefully
+            // TODO: exit more gracefully
             if (UserInputValidator.validateFilePath(this) != Result.OK) {
                 throw new ValidationException("");
             }
@@ -122,14 +105,11 @@ public class ComProm implements UIManager {
     }
 
     private void input_for_min_sig_filter() {
-        String s;
-        System.out.println("Entered 4\n" +
-                "Let's set min_sig value\n" +
-                "Enter new min_sig in the range between 0 and 1:");
-        s = Init.in.nextLine();
+        JTextField minSig = FilterWindow.getMinSig();
+        String s = minSig.getText();
         try {
             min_sig = Double.parseDouble(s);
-            //TODO: exit more gracefully
+            // TODO: exit more gracefully
             if (UserInputValidator.validateMinSig(this) != Result.OK) {
                 throw new NumberFormatException();
             }
@@ -141,13 +121,10 @@ public class ComProm implements UIManager {
     }
 
     private void input_for_file_path() {
-        String s;
-        System.out.println("Entered 3\n" +
-                "Let's set the path to the file with the data.\n" +
-                "Enter the path to the file with the data:");
-        s = Init.in.nextLine();
+        JTextField filePath = FilterWindow.getPathToFile();
+        String s = filePath.getText();
         try {
-            //TODO: exit more gracefully
+            // TODO: exit more gracefully
             path_to_file = s;
             if (UserInputValidator.validateFilePath(this) != Result.OK) {
                 throw new ValidationException("Invalid path");
@@ -160,36 +137,26 @@ public class ComProm implements UIManager {
     }
 
     private void input_for_time_filter() {
-        String s;
-        System.out.println("Entered 2\n" +
-                "Let's set time period filter\n" +
-                "Enter start date and time in format \"YYYY-MM-DD hh:mm:ss\":");
-        s = Init.in.nextLine();
+        JTextField time = FilterWindow.getTime();
+        String s = time.getText();
         try {
-            start_end_time.start = LocalDateTime.of(
-                    LocalDate.parse(s.split(" ")[0]),
-                    LocalTime.parse(s.split(" ")[1]));
+            start_end_time.start = LocalDateTime.of(LocalDate.parse(s.split(" ")[0]), LocalTime.parse(s.split(" ")[1]));
             System.out.println("Done setting start date and time of the period.");
         } catch (DateTimeParseException e) {
-            System.out.println("This wasn't a valid input," +
-                    " start time wasn't set");
+            System.out.println("This wasn't a valid input," + " start time wasn't set");
             start_end_time.start = LocalDateTime.MIN;
         }
-        System.out.println(
-                "Enter end date and time in format \"YYYY-MM-DD hh:mm:ss\":");
+        System.out.println("Enter end date and time in format \"YYYY-MM-DD hh:mm:ss\":");
         s = Init.in.nextLine();
         try {
-            start_end_time.end = LocalDateTime.of(
-                    LocalDate.parse(s.split(" ")[0]),
-                    LocalTime.parse(s.split(" ")[1]));
+            start_end_time.end = LocalDateTime.of(LocalDate.parse(s.split(" ")[0]), LocalTime.parse(s.split(" ")[1]));
             System.out.println("Done setting end date and time of the period.");
         } catch (DateTimeParseException e) {
-            System.out.println("This wasn't a valid input," +
-                    " end time wasn't set");
+            System.out.println("This wasn't a valid input," + " end time wasn't set");
             start_end_time.end = LocalDateTime.MAX;
         }
         try {
-            //TODO: exit more gracefully
+            // TODO: exit more gracefully
             if (UserInputValidator.validateTime(this) != Result.OK) {
                 throw new Exception();
             }
@@ -202,13 +169,9 @@ public class ComProm implements UIManager {
     }
 
     private void input_for_user_filter() {
-        String s;
-        System.out.println("Entered 1\n" +
-                "Let's set user to filter\n" +
-                "Enter user id:");
-        s = Init.in.nextLine();
+        JTextField userId = FilterWindow.getUserID();
         try {
-            searched_user = Integer.parseInt(s);
+            searched_user = Integer.parseInt(userId.getText());
             System.out.println("Filter for user is set.");
         } catch (NumberFormatException e) {
             System.out.println("This wasn't a valid input, no filter was set");
@@ -250,6 +213,7 @@ public class ComProm implements UIManager {
     public Result loadDataForUser(List<String> data) {
         Result r = Result.OK;
         filteredData = new ArrayList<>(data);
+        FilterWindow.setFilteredData(filteredData);
         return r;
     }
 
