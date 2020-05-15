@@ -43,9 +43,9 @@ public class FilterDataManager {
 
         if (r == Result.OK) {
             // To perform mining and save the result to memory:
-            Hashtable<int[], Double> result = null;
+            Map<Double,int[] > result = null;
             try {
-                result = algo.performMining_saveResultToMemory();
+                result = htToMap(algo.performMining_saveResultToMemory());
                 algo.performMining_saveResultToFile("output");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -58,12 +58,19 @@ public class FilterDataManager {
             // Print the results to the console
             results.add("Itemsets found: ");
             assert result != null;
-            for (Map.Entry<int[], Double> entry : result.entrySet()) {
+            List<Double> keys = new ArrayList<>(result.keySet());
+            keys.sort(new Comparator<Double>() {
+                @Override
+                public int compare(Double o1, Double o2) {
+                    return o2.compareTo(o1);
+                }
+            });
+            for (Double key : keys) {
                 StringBuilder s = new StringBuilder();
-                for (int item : entry.getKey()) {
+                for (int item : result.get(key)) {
                     s.append(DataHolder.nSetOfInts.get(item)).append("|  |");
                 }
-                s.append("#SUP: ").append(entry.getValue());
+                s.append("#SUP: ").append(key);
                 results.add(s.toString());
             }
             r = ui.loadDataForUser(results);
@@ -71,6 +78,14 @@ public class FilterDataManager {
             ui.tellToUser("Error loading data to algorithm.");
         }
         return r;
+    }
+
+    private static Map<Double, int[]> htToMap(Hashtable<int[], Double> ht) {
+        Map<Double, int[]> result=new HashMap<>();
+        for(Map.Entry<int[],Double> entry:ht.entrySet()){
+            result.put(entry.getValue(),entry.getKey());
+        }
+        return result;
     }
 
     private static Result proper_filter_by_component(UIManager ui, Result r, List<LogItem> filteredLogs) {
@@ -130,7 +145,7 @@ public class FilterDataManager {
         logItems.sort(Comparator.comparing(LogItem::getLogged_on));
         for (LogItem l : DataHolder.logItems) {
             algo.processTransaction(new int[]{
-                    DataHolder.nSetOfStrings.get(l.getLogged_on()),        //date and time
+                    //DataHolder.nSetOfStrings.get(l.getLogged_on()),        //date and time
                     DataHolder.nSetOfStrings.get(l.getEvent_context()),    //event context
                     DataHolder.nSetOfStrings.get(l.getComponent()),        //component
                     DataHolder.nSetOfStrings.get(l.getEvent_name()),       //event name
@@ -138,12 +153,12 @@ public class FilterDataManager {
                     //DataHolder.nSetOfStrings.get(l.getOrigin()),           //origin
                     //DataHolder.nSetOfStrings.get(l.getIp())                //ip address
             });
-            try { // това забавя супер много
+           /* try { // това забавя супер много
                 algo.performMining_saveResultToMemory();
             } catch (IOException e) {
                 e.printStackTrace();
                 return Result.NOK;
-            }
+            }*/
 
         }
         return Result.OK;
