@@ -15,15 +15,13 @@ public interface UIManager {
 
     String getPathToFile();
 
-    Double getMinSig();
+    Double getMinSup();
 
     String getEventContext();
 
     String getComponent();
 
     void tellToUser(String message);
-
-    void tellToUser(String message,Object way);
 
     Result loadDataForUser(List<String> data);
 

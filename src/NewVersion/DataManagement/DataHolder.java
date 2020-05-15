@@ -34,7 +34,6 @@ public class DataHolder {
         return r;
     }
 
-
     public static Result getUserById(int id, User user) {
         for (User u : users) {
             if (u.getUser_id() == id) {
@@ -45,7 +44,6 @@ public class DataHolder {
         }
         return Result.NOK;
     }
-
 
     private static Result addLogToUser(int user_id, LogItem log) {
         Result r = Result.OK;
@@ -62,8 +60,7 @@ public class DataHolder {
         return r;
     }
 
-
-    //TODO: needs modifications
+    //TODO: may need modifications
     private static Result getUserIdWhoDid(LogItem l, IntRef id) {
         if (l.getDescription().matches(".*The user with id '[0-9]+'.*")) {
             id.value = Integer.parseInt(l.getDescription().split("'")[1]);

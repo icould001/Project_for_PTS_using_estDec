@@ -4,10 +4,9 @@ import NewVersion.DataFilter.FilterDataManager;
 import NewVersion.DataManagement.LoadDataManager;
 import NewVersion.InputValidation.UserInputValidator;
 import NewVersion.Util.Result;
+import ProjectUI.Login;
 
 import java.util.Scanner;
-
-import ProjectUI.Login;
 
 /**
  * Created by Aykut Ismailov on 17.4.2020 г.
@@ -15,7 +14,7 @@ import ProjectUI.Login;
 public class Init {
     public final static Scanner in = new Scanner(System.in);
     public final static String PATH_TO_DEFAULT_LOG = "src/NewVersion/DataManagement/Items/logs_BCS37_20181103.csv";
-    final static int log_in_info = 1;
+    public final static int log_in_info = 1;
 
     public static void main(String[] args) {
         new Login();
@@ -31,30 +30,29 @@ public class Init {
         return 0;
     }
 
-    public static void prepareToFilterData() {
-        UIManager current_UI = new ComProm();
+    public static void prepareToFilterData(UIManager ui) {
         Result r = Result.OK;
-        r = UserInputValidator.validateAll(current_UI);
+        r = UserInputValidator.validateAll(ui);
         if (r == Result.OK) {
-            r = LoadDataManager.loadData(current_UI);
+            r = LoadDataManager.loadData(ui);
         } else {
             // TODO: exit more gracefully
-            current_UI.tellToUser("Invalid input.\nApp is exiting");
+            ui.tellToUser("Error with loading data.\nApp is exiting");
             System.exit(1);
         }
         if (r == Result.OK) {
-            r = FilterDataManager.filter(current_UI);
+            r = FilterDataManager.filter(ui);
         } else {
             // TODO: exit more gracefully
-            current_UI.tellToUser("Error with filtering data.\nApp is exiting");
+            ui.tellToUser("Error with filtering data.\nApp is exiting");
             System.exit(1);
         }
 
         if (r == Result.OK) {
-            current_UI.showUser();
+            ui.showUser();
         } else {
             // TODO: exit more gracefully
-            current_UI.tellToUser("Error with showing data.\nApp is exiting");
+            ui.tellToUser("Error with showing data.\nApp is exiting");
             System.exit(1);
         }
     }

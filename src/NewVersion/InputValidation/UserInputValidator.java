@@ -16,7 +16,7 @@ public class UserInputValidator {
             r = validateFilePath(ui);
         }
         if (r == Result.OK) {
-            r = validateMinSig(ui);
+            r = validateMinSup(ui);
         }
         return r;
     }
@@ -47,9 +47,9 @@ public class UserInputValidator {
         return r;
     }
 
-    public static Result validateMinSig(UIManager ui) {
+    public static Result validateMinSup(UIManager ui) {
         Result r = Result.OK;
-        if (ui.getMinSig() < 0 || ui.getMinSig() > 1) {
+        if (ui.getMinSup() < 0 || ui.getMinSup() > 1) {
             r = Result.NOK;
         }
         return r;

@@ -4,13 +4,13 @@ package NewVersion.DataManagement.Items;
  * Created by Aykut Ismailov on 22.3.2020 г.
  */
 public class LogItem {
-    String logged_on;
-    String event_context;
-    String component;
-    String event_name;
-    String description;
-    String origin;
-    String ip;
+    private String logged_on;
+    private String event_context;
+    private String component;
+    private String event_name;
+    private String description;
+    private String origin;
+    private String ip;
 
     public LogItem(String logged_on, String event_context, String component, String event_name, String description, String origin, String ip) {
         this.logged_on = logged_on;

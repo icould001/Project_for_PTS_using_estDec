@@ -1,15 +1,15 @@
 package NewVersion.DataManagement;
 
+import NewVersion.DataManagement.Items.LogItem;
+import NewVersion.UserInterface.UIManager;
+import NewVersion.Util.Result;
+import NewVersion.Util.UnexpectedLogException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-
-import NewVersion.DataManagement.Items.LogItem;
-import NewVersion.UserInterface.UIManager;
-import NewVersion.Util.Result;
-import NewVersion.Util.UnexpectedLogException;
 
 /**
  * Created by Aykut Ismailov on 17.4.2020 г.
@@ -18,9 +18,10 @@ public class LoadDataManager {
 
     public static Result loadData(UIManager ui) {
         Result r = Result.OK;
+        DataHolder.clearData();
         try (FileInputStream in = new FileInputStream(ui.getPathToFile()); //
-                Scanner reader = new Scanner(in)) {
-            for (; reader.hasNext();) {
+             Scanner reader = new Scanner(in)) {
+            for (; reader.hasNext(); ) {
                 String[] separatedLine = Arrays.stream(reader.nextLine().split(",")).peek(x -> x = x.trim())
                         .collect(Collectors.joining(",")).split(",");// trimming that apperantly is not working
                 try {
@@ -36,6 +37,8 @@ public class LoadDataManager {
             e.printStackTrace();
             r = Result.NOK;
         }
+        System.out.println("LogItems size " + DataHolder.logItems.size());
+        System.out.println("Users size " + DataHolder.users.size());
         return r;
     }
 

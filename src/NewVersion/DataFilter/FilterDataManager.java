@@ -21,8 +21,8 @@ public class FilterDataManager {
     public static Result filter(UIManager ui) {
         Result r = Result.OK;
 
-        double mins = 0.1;
-        double minsig = ui.getMinSig() * mins;
+        double mins = ui.getMinSup();
+        double minsig = 0.4 * mins;
 
         Algo_estDec algo = new Algo_estDec(mins, minsig);
 
@@ -40,10 +40,6 @@ public class FilterDataManager {
         r = proper_filter_by_component(ui, r, filteredLogs);
 
         r = loadInAlgorithm(algo, filteredLogs);
-
-        if (r != Result.OK) {
-            ui.tellToUser("Error loading data to algorithm.");
-        }
 
         if (r == Result.OK) {
             // To perform mining and save the result to memory:
@@ -71,6 +67,8 @@ public class FilterDataManager {
                 results.add(s.toString());
             }
             r = ui.loadDataForUser(results);
+        } else {
+            ui.tellToUser("Error loading data to algorithm.");
         }
         return r;
     }
@@ -134,9 +132,9 @@ public class FilterDataManager {
             algo.processTransaction(new int[]{
                     DataHolder.nSetOfStrings.get(l.getLogged_on()),        //date and time
                     DataHolder.nSetOfStrings.get(l.getEvent_context()),    //event context
-                    //DataHolder.nSetOfStrings.get(l.getComponent()),        //component
+                    DataHolder.nSetOfStrings.get(l.getComponent()),        //component
                     DataHolder.nSetOfStrings.get(l.getEvent_name()),       //event name
-                    //DataHolder.nSetOfStrings.get(l.getDescription()),      //description
+                    DataHolder.nSetOfStrings.get(l.getDescription()),      //description
                     //DataHolder.nSetOfStrings.get(l.getOrigin()),           //origin
                     //DataHolder.nSetOfStrings.get(l.getIp())                //ip address
             });
@@ -160,7 +158,7 @@ public class FilterDataManager {
             if (r == Result.OK) {
                 logs.addAll(u.getLogItems());
             } else {
-                ui.tellToUser("User wasn't found");
+                ui.tellToUser("User wasn't found. Will continue with all users");
                 r = Result.OK;
             }
         } else {
@@ -189,11 +187,11 @@ public class FilterDataManager {
 
     private static Result filterByTime(UIManager ui, List<LogItem> logs) {
         Result r = Result.OK;
-
-        for (LogItem log : logs) {
+        for (Iterator<LogItem> i = logs.iterator(); i.hasNext(); ) {
+            LogItem log = i.next();
             try {
                 if (is_log_in_time_period(ui, log)) {
-                    logs.remove(log);
+                    i.remove();
                 }
             } catch (DateTimeParseException e) {
                 r = Result.NOK;

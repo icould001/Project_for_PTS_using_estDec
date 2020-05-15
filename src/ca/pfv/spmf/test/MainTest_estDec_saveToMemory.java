@@ -16,7 +16,7 @@ public class MainTest_estDec_saveToMemory {
 
     public static void main(String[] arg) throws FileNotFoundException, IOException, InterruptedException {
 
-        double mins = 0;
+        double mins = 0.3;
         double minsig = 0.4 * mins;
 
         Algo_estDec algo = new Algo_estDec(mins, minsig);
@@ -26,11 +26,11 @@ public class MainTest_estDec_saveToMemory {
 
         // To process transactions from memory:
         //algo.processTransaction(new int[]{1});
-        algo.processTransaction(new int[]{2});
-		algo.processTransaction(new int[]{2});
-       // algo.processTransaction(new int[]{2, 3, 4});
+        //algo.processTransaction(new int[]{2});
+		//algo.processTransaction(new int[]{2});
+        //algo.processTransaction(new int[]{2, 3, 4});
         // To read transactions from a file (here 1000 is the number of lines to be read):
-//		algo.processTransactionFromFile(fileToPath("contextIGB.txt"));
+		algo.processTransactionFromFile(fileToPath("contextIGB.txt"));
 
         // To perform mining and save the result to memory:
         Hashtable<int[], Double> result = algo.performMining_saveResultToMemory();
