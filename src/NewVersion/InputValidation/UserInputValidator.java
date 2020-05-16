@@ -2,6 +2,7 @@ package NewVersion.InputValidation;
 
 import NewVersion.UserInterface.UIManager;
 import NewVersion.Util.Result;
+import NewVersion.Util.UnexpectedLogException;
 
 /**
  * Created by Aykut Ismailov on 17.4.2020 г.
@@ -53,5 +54,12 @@ public class UserInputValidator {
             r = Result.NOK;
         }
         return r;
+    }
+
+    public static Result validateLog(String[] separatedLine) throws UnexpectedLogException {
+        if (!Character.isDigit(separatedLine[0].charAt(0))) {
+            throw new UnexpectedLogException(String.join(" , ", separatedLine));
+        }
+        return Result.OK;
     }
 }

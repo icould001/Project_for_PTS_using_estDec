@@ -1,6 +1,7 @@
 package NewVersion.DataManagement;
 
 import NewVersion.DataManagement.Items.LogItem;
+import NewVersion.InputValidation.UserInputValidator;
 import NewVersion.UserInterface.UIManager;
 import NewVersion.Util.Result;
 import NewVersion.Util.UnexpectedLogException;
@@ -25,10 +26,10 @@ public class LoadDataManager {
                 String[] separatedLine = Arrays.stream(reader.nextLine().split(",")).peek(x -> x = x.trim())
                         .collect(Collectors.joining(",")).split(",");// trimming that apperantly is not working
                 try {
-                    if (!Character.isDigit(separatedLine[0].charAt(0))) {
-                        throw new UnexpectedLogException(String.join(" , ", separatedLine));
+                    r = UserInputValidator.validateLog(separatedLine);
+                    if(r == Result.OK) {
+                        process_log(separatedLine);
                     }
-                    process_log(separatedLine);
                 } catch (UnexpectedLogException e) {
                     System.err.println(e.getMessage());
                 }
