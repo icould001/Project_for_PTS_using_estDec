@@ -143,7 +143,7 @@ public class FilterDataManager {
 
     private static Result loadInAlgorithm(Algo_estDec algo, List<LogItem> logItems) {
         logItems.sort(Comparator.comparing(LogItem::getLogged_on));
-        for (LogItem l : DataHolder.logItems) {
+        for (LogItem l : logItems) {
             algo.processTransaction(new int[]{
                     //DataHolder.nSetOfStrings.get(l.getLogged_on()),        //date and time
                     DataHolder.nSetOfStrings.get(l.getEvent_context()),    //event context
@@ -188,6 +188,7 @@ public class FilterDataManager {
         Result r = Result.OK;
         if (!ui.getEventContext().equals("")) {
             logs.removeIf(log -> !ui.getEventContext().equals(log.getEvent_context()));
+            System.err.println(logs.size());
         }
         return r;
     }
@@ -196,6 +197,7 @@ public class FilterDataManager {
         Result r = Result.OK;
         if (!"".equals(ui.getComponent())) {
             logs.removeIf(log -> !ui.getComponent().equals(log.getComponent()));
+            System.err.println(logs.size());
         }
         return r;
     }

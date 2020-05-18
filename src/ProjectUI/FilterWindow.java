@@ -260,6 +260,7 @@ public class FilterWindow extends JFrame implements UIManager {
                     t.start();
                 } else {
                     filtered.setText("No output");
+                    setDefaults();
                 }
             } else {
                 tellToUser("Currently algorithm is working. The output will be shown soon.");
